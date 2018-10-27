@@ -9,11 +9,16 @@ from processing_audio import *
 from translate import *
 from transcript import *
 
-video_file = 't22' + '.mp4'
+video_file = 't50' + '.mp4'
 
 # src = 'en'
 # trg = 'uk'
 # sup_voice =  'uk'
+# sup_lang = 'en-US'
+
+# src = 'en'
+# trg = 'ru'
+# sup_voice =  'ru'
 # sup_lang = 'en-US'
 
 src = 'uk'
