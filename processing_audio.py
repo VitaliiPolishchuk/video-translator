@@ -4,29 +4,15 @@ from pathlib import Path
 
 from pydub import AudioSegment
 from pydub.playback import play
+from gtts import gTTS
 
-def synthesize_text(text, lang_code ,audio_output='output.mp3'):
-    """Synthesizes speech from the input string of text."""
-
-    client = texttospeech.TextToSpeechClient()
-
-    input_text = texttospeech.types.SynthesisInput(text=text)
-
-    # Note: the voice can also be specified by name.
-    # Names of voices can be retrieved with client.list_voices().
-    voice = texttospeech.types.VoiceSelectionParams(
-        language_code=lang_code,
-        ssml_gender=texttospeech.enums.SsmlVoiceGender.FEMALE)
-
-    audio_config = texttospeech.types.AudioConfig(
-        audio_encoding=texttospeech.enums.AudioEncoding.MP3)
-
-    response = client.synthesize_speech(input_text, voice, audio_config)
-
+def synthesize_text(text, lang ,audio_output='output.mp3'):
+    tts=gTTS(text=text, lang=lang)
+    tts.save(audio_output)
     # The response's audio_content is binary.
-    with open(audio_output, 'wb') as out:
-        out.write(response.audio_content)
-        print('Audio content written to file' + audio_output)
+    # with open(audio_output, 'wb') as out:
+    #     out.write(response.audio_content)
+    #     print('Audio content written to file' + audio_output)
 # synthesize_text("Hello")
 
 # def create_audio(speech, ):
@@ -43,7 +29,10 @@ def create_audio(speech, path, output_audio):
 
 
     def get_silence(end,start):
-        return AudioSegment.silent(duration=start-end*1000)
+        print('==================')
+        print((start-end)*1000)
+        print('==================')
+        return AudioSegment.silent(duration=(start-end)*1000)
 
     def get_audio(path):
         return AudioSegment.from_mp3(path)
@@ -51,6 +40,8 @@ def create_audio(speech, path, output_audio):
     silence_list = []
     try:
         for i, val in enumerate(speech):
+            if i == 0:
+                silence_list.append(get_silence(0,speech[i]['start']))
             silence_list.append(get_silence(speech[i]['end'],speech[i+1]['start']))
     #         print(f"{speech[i]['end']} - {speech[i+1]['start']}")
     except IndexError:
@@ -58,15 +49,14 @@ def create_audio(speech, path, output_audio):
 
     # print(sorted_files[0])
     start_audio = get_audio(sorted_files[0])
-    final_song = start_audio
-
+    final_song = silence_list[0]
     try:
         for i, audio in enumerate(sorted_files):
             if i == 0:
-                final_song += silence_list[i]
-            else:
                 final_song += get_audio(sorted_files[i])
+            else:
                 final_song += silence_list[i]
+                final_song += get_audio(sorted_files[i])
     except IndexError:
         pass
 
