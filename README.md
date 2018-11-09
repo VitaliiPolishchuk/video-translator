@@ -4,4 +4,4 @@ Video translator that use GOOGLE text-to-speech, speech-to-text and translator A
                           FFMPEG commands,
                           Python.
                           
-This program generate two .srt file for both language. 
+This program also generates two .srt file for both language. 
